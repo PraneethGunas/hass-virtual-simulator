@@ -24,7 +24,7 @@ export const VirtualSensors = () => {
   return (
     <Group title='Virtual Sensors'>
       {sensors.map(sensor => (
-        <Column fullWidth>
+        <Column fullWidth key={sensor.entity_id}>
           <SensorCard entity={sensor.entity_id} />
           <RangeSlider
             min={-20}
