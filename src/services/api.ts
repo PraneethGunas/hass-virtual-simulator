@@ -1,13 +1,15 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://hammock.local:8123/api';
+const BASE_URL = 'https://homeassistant.praneethg.xyz/api';
 const VIRTUAL_SERVICE = '/virtual';
 
 // Endpoint definitions
 const ENDPOINTS = {
-  ADD_VIRTUAL_DEVICE: `${BASE_URL}${VIRTUAL_SERVICE}/add`,
+  ADD_VIRTUAL_DEVICE: `${BASE_URL}${VIRTUAL_SERVICE}/add`, // custom endpoint
+  FETCH_AUTOMATIONS: `${BASE_URL}${VIRTUAL_SERVICE}/automations/config`, // custom endpoint
   AUTOMATION_ENTRY: `${BASE_URL}/config/automation/config/entry`,
   VALIDATE_AUTOMATION: `${BASE_URL}/config/core/check_config`,
+  FETCH_STATES: `${BASE_URL}/states`,
 };
 
 // Reusable headers function
@@ -31,3 +33,11 @@ export const validateAutomation = () =>
   axios.post(ENDPOINTS.VALIDATE_AUTOMATION, null, {
     headers: getHeaders(),
   });
+
+export const fetchAutomations = async () => {
+  const response = await axios.get(ENDPOINTS.FETCH_AUTOMATIONS, {
+    headers: getHeaders(),
+  });
+
+  return response.data;
+};
