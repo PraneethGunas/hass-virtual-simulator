@@ -2,6 +2,7 @@ import { TimeCard } from '@hakit/components';
 import { useHass } from '@hakit/core';
 import { VirtualLights } from './components/VirtualLights';
 import { VirtualSensors } from './components/VirtualSensors';
+import { AutomationManager } from './components/AutomationManager';
 
 function Dashboard() {
   const { getAllEntities } = useHass();
@@ -11,6 +12,7 @@ function Dashboard() {
     <>
       <TimeCard />
       <br />
+      <AutomationManager />
       <VirtualLights />
       <br />
       <VirtualSensors />
