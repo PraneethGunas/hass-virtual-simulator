@@ -6,6 +6,7 @@ import { useHomeAssistantWebSocket } from '../Hooks/useHomeAssistantWebSocket';
 
 export const AutomationManager = () => {
   const [automations, setAutomations] = useState([]);
+  const [triggeredAutomation, setTriggeredAutomation] = useState();
 
   useEffect(() => {
     const getAutomations = async () => {
@@ -23,6 +24,9 @@ export const AutomationManager = () => {
   const handleEvent = useCallback((eventType: string, entityId: string, data: any) => {
     if (eventType === 'automation_triggered') {
       console.log('Automation triggered:', entityId, data);
+      setTriggeredAutomation(data);
+      // Clear triggered automation after 5 seconds
+      setTimeout(() => setTriggeredAutomation(undefined), 2000);
     }
   }, []);
 
@@ -32,7 +36,7 @@ export const AutomationManager = () => {
     <Group title='Automation Manager'>
       <Column alignItems='flex-start'>
         {automations.map(automation => (
-          <AutomationEntities automation={automation} key={automation.id} />
+          <AutomationEntities automation={automation} key={automation.id} triggeredAutomation={triggeredAutomation} />
         ))}
       </Column>
     </Group>

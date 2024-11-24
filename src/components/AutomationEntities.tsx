@@ -15,12 +15,12 @@ const renderEntityRow = (entity_id: EntityName) => (
 );
 
 export const AutomationEntities = props => {
-  const { automation } = props;
+  const { automation, triggeredAutomation } = props;
   const entities = extractCategorizedEntityIds(automation);
 
   return (
     <div key={automation.id}>
-      <h2>{automation.alias}</h2>
+      <h2 style={{ color: triggeredAutomation?.name == automation.alias ? 'green' : 'white' }}>{automation.alias}</h2>
       {automation.description && <p>{automation.description}</p>}
 
       <div className='space-y-4'>

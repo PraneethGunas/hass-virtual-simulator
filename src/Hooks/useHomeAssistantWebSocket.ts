@@ -69,7 +69,7 @@ export const useHomeAssistantWebSocket = (
           const haEvent = data.event as HAEvent;
           onEvent(haEvent.event_type, haEvent.data.entity_id, haEvent.data);
         } else {
-          console.log('Received message:', data);
+          // console.log('Received message:', data); ignore non-event messages for now
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
