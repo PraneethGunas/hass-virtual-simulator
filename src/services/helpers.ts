@@ -88,3 +88,43 @@ export const extractCategorizedEntityIds = automation => {
 
   return result;
 };
+
+/**
+ * Safely converts a string to snake_case format without using regex
+ * @param {string} str - The input string to convert
+ * @returns {string} The converted snake_case string
+ */
+export const toSnakeCase = str => {
+  if (!str || typeof str !== 'string') {
+    return '';
+  }
+
+  const result = [];
+  let wasSpace = false;
+
+  // Process each character
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i].toLowerCase();
+
+    // Check if it's a letter or number
+    if ((char >= 'a' && char <= 'z') || (char >= '0' && char <= '9')) {
+      result.push(char);
+      wasSpace = false;
+    }
+    // Handle spaces and special characters
+    else {
+      // Only add underscore if previous character wasn't a space
+      if (!wasSpace && result.length > 0) {
+        result.push('_');
+      }
+      wasSpace = true;
+    }
+  }
+
+  // Remove trailing underscore if exists
+  if (result[result.length - 1] === '_') {
+    result.pop();
+  }
+
+  return result.join('');
+};
