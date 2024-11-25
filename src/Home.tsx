@@ -18,7 +18,6 @@ function Home() {
   return (
     <Column fullWidth>
       <h2>Hello {user ? user.name : ' there!'}</h2>
-      <p>The time below should be updating from home asisstant every minute</p>
       <Dashboard />
     </Column>
   );
