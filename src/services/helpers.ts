@@ -32,9 +32,9 @@ export const filterEntitiesByDomain = (entities, domain) => {
 };
 
 /**
- * Extracts entity_ids from an automation configuration, categorized by type
+ * Extracts entity_ids from an automation configuration, categorized by type, including nested structures
  * @param {Object} automation - The automation configuration object
- * @returns {Object} Object with categorized arrays of entity_ids
+ * @returns {Object} Object with categorized arrays of entity_ids along with their paths
  */
 export const extractCategorizedEntityIds = automation => {
   if (!automation || typeof automation !== 'object') {
@@ -47,43 +47,42 @@ export const extractCategorizedEntityIds = automation => {
     'action entities': [],
   };
 
-  // Extract from triggers
-  if (Array.isArray(automation.triggers)) {
-    automation.triggers.forEach(trigger => {
-      if (trigger.entity_id) {
-        // Handle both single string and array of entity_ids
-        const triggerIds = Array.isArray(trigger.entity_id) ? trigger.entity_id : [trigger.entity_id];
-        result['trigger entities'].push(...triggerIds);
-      }
-    });
+  /**
+   * Recursively extracts entity_ids from a given object or array
+   * @param {Object|Array} data - The object or array to search
+   * @param {Array} path - The current path of keys leading to the data
+   * @param {string} category - The category (trigger, condition, action)
+   */
+  const extractEntityIds = (data, path, category) => {
+    if (Array.isArray(data)) {
+      // Iterate over each element in the array
+      data.forEach((item, index) => {
+        extractEntityIds(item, [...path, index], category);
+      });
+    } else if (typeof data === 'object' && data !== null) {
+      // Iterate over keys in the object
+      Object.keys(data).forEach(key => {
+        if (key === 'entity_id') {
+          const entityIds = Array.isArray(data[key]) ? data[key] : [data[key]];
+          entityIds.forEach((entityId, idx) => {
+            result[category].push({ entity_id: entityId, path: [...path, key, idx] });
+          });
+        } else {
+          extractEntityIds(data[key], [...path, key], category);
+        }
+      });
+    }
+  };
+
+  // Extract entity_ids from triggers, conditions, and actions
+  if (automation.triggers) {
+    extractEntityIds(automation.triggers, ['triggers'], 'trigger entities');
   }
-
-  // Extract from conditions
-  if (Array.isArray(automation.conditions)) {
-    automation.conditions.forEach(condition => {
-      if (condition.entity_id) {
-        // Handle both single string and array of entity_ids
-        const conditionIds = Array.isArray(condition.entity_id) ? condition.entity_id : [condition.entity_id];
-        result['condition entities'].push(...conditionIds);
-      }
-    });
+  if (automation.conditions) {
+    extractEntityIds(automation.conditions, ['conditions'], 'condition entities');
   }
-
-  // Extract from actions
-  if (Array.isArray(automation.actions)) {
-    automation.actions.forEach(action => {
-      // Check for entity_id in target
-      if (action.target?.entity_id) {
-        const targetIds = Array.isArray(action.target.entity_id) ? action.target.entity_id : [action.target.entity_id];
-        result['action entities'].push(...targetIds);
-      }
-
-      // Check for direct entity_id
-      if (action.entity_id) {
-        const actionIds = Array.isArray(action.entity_id) ? action.entity_id : [action.entity_id];
-        result['action entities'].push(...actionIds);
-      }
-    });
+  if (automation.actions) {
+    extractEntityIds(automation.actions, ['actions'], 'action entities');
   }
 
   return result;
@@ -127,4 +126,30 @@ export const toSnakeCase = str => {
   }
 
   return result.join('');
+};
+
+export const replaceObjectPath = (obj, path, newValue) => {
+  // Create a deep clone of the original object
+  const newObject = JSON.parse(JSON.stringify(obj));
+
+  // Use a non-mutating approach to traverse and update the object
+  const updateNestedObject = (target, pathArray, value) => {
+    // Create a copy of the path to avoid mutation
+    const currentPath = [...pathArray];
+
+    // If we're at the last key, update the value
+    if (currentPath.length === 1) {
+      target[currentPath[0]] = value;
+      return;
+    }
+
+    // Recursively traverse the object
+    const currentKey = currentPath.shift();
+    updateNestedObject(target[currentKey], currentPath, value);
+  };
+
+  // Update the cloned object
+  updateNestedObject(newObject, path, newValue);
+
+  return newObject;
 };
