@@ -19,18 +19,24 @@ const EntityMap = (entity_id: EntityName) => {
           </div>
         )}
       />
-      {/* render dropdown */}
-      <select
-        onChange={e => {
-          setActive(e.target.value);
-        }}
-      >
-        {domainEntities.map(entity => (
-          <option key={entity.entity_id} value={entity.entity_id}>
-            {entity.attributes.friendly_name}
-          </option>
-        ))}
-      </select>
+
+      {domainEntities.length > 1 ? (
+        <select
+          onClick={e => {
+            e.stopPropagation();
+          }}
+          value={active}
+          onChange={e => {
+            setActive(e.target.value);
+          }}
+        >
+          {domainEntities.map(entity => (
+            <option key={entity.entity_id} value={entity.entity_id}>
+              {entity.attributes.friendly_name}
+            </option>
+          ))}
+        </select>
+      ) : null}
     </>
   );
 };
