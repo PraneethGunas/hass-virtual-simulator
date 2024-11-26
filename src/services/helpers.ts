@@ -64,9 +64,15 @@ export const extractCategorizedEntityIds = automation => {
       Object.keys(data).forEach(key => {
         if (key === 'entity_id') {
           const entityIds = Array.isArray(data[key]) ? data[key] : [data[key]];
-          entityIds.forEach((entityId, idx) => {
-            result[category].push({ entity_id: entityId, path: [...path, key, idx] });
-          });
+          if (Array.isArray(data[key])) {
+            // Generate path with index for arrays
+            entityIds.forEach((entityId, idx) => {
+              result[category].push({ entity_id: entityId, path: [...path, key, idx] });
+            });
+          } else {
+            // Generate path without index for strings
+            result[category].push({ entity_id: data[key], path: [...path, key] });
+          }
         } else {
           extractEntityIds(data[key], [...path, key], category);
         }
@@ -129,27 +135,19 @@ export const toSnakeCase = str => {
 };
 
 export const replaceObjectPath = (obj, path, newValue) => {
-  // Create a deep clone of the original object
+  // Create a deep clone of the original object to ensure immutability
   const newObject = JSON.parse(JSON.stringify(obj));
 
-  // Use a non-mutating approach to traverse and update the object
-  const updateNestedObject = (target, pathArray, value) => {
-    // Create a copy of the path to avoid mutation
-    const currentPath = [...pathArray];
+  // Traverse the cloned object to the target location
+  let target = newObject;
+  for (let i = 0; i < path.length - 1; i++) {
+    const key = path[i];
+    target = target[key];
+  }
 
-    // If we're at the last key, update the value
-    if (currentPath.length === 1) {
-      target[currentPath[0]] = value;
-      return;
-    }
-
-    // Recursively traverse the object
-    const currentKey = currentPath.shift();
-    updateNestedObject(target[currentKey], currentPath, value);
-  };
-
-  // Update the cloned object
-  updateNestedObject(newObject, path, newValue);
+  // Assign the new value at the target path
+  const lastKey = path[path.length - 1];
+  target[lastKey] = newValue;
 
   return newObject;
 };
