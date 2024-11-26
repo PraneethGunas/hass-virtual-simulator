@@ -6,7 +6,7 @@ export const useEntitiesByDomain = entity_id => {
   const myDomain = getEntityType(entity_id);
   const entities = virtualObjects.filter(entity => {
     const domain = getEntityType(entity.entity_id);
-    return domain == myDomain && entity.entity_id != entity_id;
+    return domain == myDomain;
   });
   return { entities };
 };
