@@ -1,17 +1,17 @@
-import { extractCategorizedEntityIds } from '../services/helpers';
-import { type EntityName } from '@hakit/core';
+import { extractCategorizedEntityIds, replaceObjectPath } from '../services/helpers';
 import { Column, Row, EntitiesCardRow, ButtonCard } from '@hakit/components';
 import { useEntitiesByDomain } from '../Hooks/useEntitiesByDomain';
 import { useState } from 'react';
 import CodeBlock from './CodeBlock';
 
-const EntityMap = (entity_id: EntityName) => {
-  const [active, setActive] = useState(entity_id);
-  const { entities: domainEntities } = useEntitiesByDomain(entity_id);
+const EntityMap = (item, updateAutomation) => {
+  const [active, setActive] = useState(item.entity_id);
+  const { entities: domainEntities } = useEntitiesByDomain(item.entity_id);
 
   return (
     <>
       <EntitiesCardRow
+        key={item.entity_id}
         entity={active}
         renderState={entity => (
           <div>
@@ -28,6 +28,7 @@ const EntityMap = (entity_id: EntityName) => {
           value={active}
           onChange={e => {
             setActive(e.target.value);
+            updateAutomation(item, e.target.value);
           }}
         >
           {domainEntities.map(entity => (
@@ -53,6 +54,11 @@ export const AutomationEntities = props => {
     setShowScript(false);
   };
 
+  const updateAutomation = (item, newEntity) => {
+    const updatedAutomation = replaceObjectPath(automation, [...item.path], newEntity);
+    console.log(updatedAutomation);
+  };
+
   return (
     <>
       <ButtonCard
@@ -67,7 +73,7 @@ export const AutomationEntities = props => {
               <Row>
                 <h5>Entities at Trigger</h5>
               </Row>
-              <Column>{automationEntities['trigger entities'].map(entity_id => EntityMap(entity_id))}</Column>
+              <Column>{automationEntities['trigger entities'].map(item => EntityMap(item, updateAutomation))}</Column>
             </div>
           ) : null}
 
@@ -77,7 +83,7 @@ export const AutomationEntities = props => {
               <Row>
                 <h5>Entities at Condition</h5>
               </Row>
-              <Column>{automationEntities['condition entities'].map(entity_id => EntityMap(entity_id))}</Column>
+              <Column>{automationEntities['condition entities'].map(item => EntityMap(item, updateAutomation))}</Column>
             </div>
           ) : null}
 
@@ -87,7 +93,7 @@ export const AutomationEntities = props => {
               <Row>
                 <h5>Entities at Action</h5>
               </Row>
-              <Column>{automationEntities['action entities'].map(entity_id => EntityMap(entity_id))}</Column>
+              <Column>{automationEntities['action entities'].map(item => EntityMap(item, updateAutomation))}</Column>
             </div>
           ) : null}
           <br />
