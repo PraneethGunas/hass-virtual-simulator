@@ -1,4 +1,4 @@
-import { extractCategorizedEntityIds, replaceObjectPath } from '../services/helpers';
+import { deepEqual, extractCategorizedEntityIds, replaceObjectPath } from '../services/helpers';
 import { Column, Row, EntitiesCardRow, ButtonCard } from '@hakit/components';
 import { useEntitiesByDomain } from '../Hooks/useEntitiesByDomain';
 import { useState } from 'react';
@@ -46,6 +46,7 @@ export const AutomationEntities = props => {
   const { automation, triggeredAutomation, entity } = props;
   const automationEntities = extractCategorizedEntityIds(automation);
   const [showScript, setShowScript] = useState(false);
+  const [modifiedAutomation, setModifiedAutomation] = useState(automation);
   const toggleScript = () => {
     setShowScript(!showScript);
   };
@@ -56,7 +57,7 @@ export const AutomationEntities = props => {
 
   const updateAutomation = (item, newEntity) => {
     const updatedAutomation = replaceObjectPath(automation, [...item.path], newEntity);
-    console.log(updatedAutomation);
+    setModifiedAutomation(updatedAutomation);
   };
 
   return (
@@ -100,11 +101,14 @@ export const AutomationEntities = props => {
         </div>
       </ButtonCard>
       {showScript ? (
-        <div className='overlay' onClick={onClose}>
-          <div className='overlay-content'>
-            <CodeBlock code={automation} />
+        <>
+          <div className='overlay' onClick={onClose}>
+            <div className='overlay-content'>
+              <CodeBlock code={automation} />
+              {deepEqual(automation, modifiedAutomation) ? null : <CodeBlock code={modifiedAutomation} />}
+            </div>
           </div>
-        </div>
+        </>
       ) : null}
     </>
   );

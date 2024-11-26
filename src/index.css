@@ -16,11 +16,13 @@
 }
   
 .overlay-content {
-    border-radius: 20px;
+    border-radius: 30px;
     /* width: 80%; */
     /* max-width: 600px; */
     /* max-height: 80%; */
     overflow-y: auto; /* Scrollable for large content */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: row;
 }
   
