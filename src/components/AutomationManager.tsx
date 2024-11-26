@@ -31,7 +31,6 @@ export const AutomationManager = ({ automationEntities }) => {
   }, []);
 
   useHomeAssistantWebSocket(handleEvent);
-  console.log(automations[0]);
 
   return (
     <Group title='Automation Manager' alignItems='stretch'>
