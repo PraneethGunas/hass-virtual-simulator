@@ -1,60 +1,77 @@
 import { extractCategorizedEntityIds } from '../services/helpers';
 import { type EntityName } from '@hakit/core';
-import { Column, Row, EntitiesCardRow } from '@hakit/components';
+import { Column, Row, EntitiesCardRow, ButtonCard } from '@hakit/components';
+import { useEntitiesByDomain } from '../Hooks/useEntitiesByDomain';
+import { useState } from 'react';
 
-const renderEntityRow = (entity_id: EntityName) => (
-  <EntitiesCardRow
-    key={entity_id}
-    entity={entity_id}
-    renderState={entity => (
-      <div>
-        {entity.state} {entity.attributes.unit_of_measurement}
-      </div>
-    )}
-  />
-);
-
-export const AutomationEntities = props => {
-  const { automation, triggeredAutomation } = props;
-  const entities = extractCategorizedEntityIds(automation);
+const EntityMap = (entity_id: EntityName) => {
+  const [active, setActive] = useState(entity_id);
+  const { entities: domainEntities } = useEntitiesByDomain(entity_id);
 
   return (
-    <div key={automation.id}>
-      <h2 style={{ color: triggeredAutomation?.name == automation.alias ? 'green' : 'white' }}>{automation.alias}</h2>
-      {automation.description && <p>{automation.description}</p>}
+    <>
+      <EntitiesCardRow
+        entity={active}
+        renderState={entity => (
+          <div>
+            {entity.state} {entity.attributes.unit_of_measurement}
+          </div>
+        )}
+      />
+      {/* render dropdown */}
+      <select
+        onChange={e => {
+          setActive(e.target.value);
+        }}
+      >
+        {domainEntities.map(entity => (
+          <option key={entity.entity_id} value={entity.entity_id}>
+            {entity.attributes.friendly_name}
+          </option>
+        ))}
+      </select>
+    </>
+  );
+};
 
-      <div className='space-y-4'>
+export const AutomationEntities = props => {
+  const { automation, triggeredAutomation, entity } = props;
+  const automationEntities = extractCategorizedEntityIds(automation);
+
+  return (
+    <ButtonCard entity={entity.entity_id} style={{ background: triggeredAutomation?.name == automation.alias ? 'green' : undefined }}>
+      <div>
         {/* Trigger Entities */}
-        {entities['trigger entities'].length > 0 ? (
+        {automationEntities['trigger entities'].length > 0 ? (
           <div>
             <Row>
               <h5>Entities at Trigger</h5>
             </Row>
-            <Column>{entities['trigger entities'].map(renderEntityRow)}</Column>
+            <Column>{automationEntities['trigger entities'].map(entity_id => EntityMap(entity_id))}</Column>
           </div>
         ) : null}
 
         {/* Condition Entities */}
-        {entities['condition entities'].length > 0 ? (
+        {automationEntities['condition entities'].length > 0 ? (
           <div>
             <Row>
               <h5>Entities at Condition</h5>
             </Row>
-            <Column>{entities['condition entities'].map(renderEntityRow)}</Column>
+            <Column>{automationEntities['condition entities'].map(entity_id => EntityMap(entity_id))}</Column>
           </div>
         ) : null}
 
         {/* Action Entities */}
-        {entities['action entities'].length > 0 ? (
+        {automationEntities['action entities'].length > 0 ? (
           <div>
             <Row>
               <h5>Entities at Action</h5>
             </Row>
-            <Column>{entities['action entities'].map(renderEntityRow)}</Column>
+            <Column>{automationEntities['action entities'].map(entity_id => EntityMap(entity_id))}</Column>
           </div>
         ) : null}
         <br />
       </div>
-    </div>
+    </ButtonCard>
   );
 };

@@ -1,26 +1,43 @@
-import { TimeCard } from '@hakit/components';
+import { TimeCard, Column, Row } from '@hakit/components';
 import { useHass } from '@hakit/core';
 import { VirtualLights } from './components/VirtualLights';
 import { VirtualSensors } from './components/VirtualSensors';
 import { AutomationManager } from './components/AutomationManager';
+import { getEntityType } from './services/helpers';
 
-function Dashboard() {
+/**
+ * Dashboard component displaying various Home Assistant controls and information
+ */
+export const Dashboard = () => {
   const { getAllEntities } = useHass();
   const entities = getAllEntities();
+  const automationEntities = Object.values(entities).reduce((acc, entity) => {
+    if (getEntityType(entity.entity_id) === 'automation') {
+      acc[entity.attributes.id] = entity;
+    }
+    return acc;
+  }, {});
 
   return (
-    <>
-      <TimeCard />
-      <br />
-      <AutomationManager />
-      <VirtualLights />
-      <br />
-      <VirtualSensors />
-      <p>
-        You have <b>{Object.keys(entities).length}</b> entities to start automating with! Have fun!
-      </p>
-    </>
+    <Column fullWidth>
+      {/* Header Section */}
+      <Row gap='4' alignItems='center' className='mb-6'>
+        <TimeCard />
+      </Row>
+
+      {/* Automation Section */}
+
+      <h2 className='text-xl font-semibold mb-4'>Automations</h2>
+      <AutomationManager automationEntities={automationEntities} />
+
+      {/* Virtual Devices Section */}
+      <h2 className='text-xl font-semibold mb-4'>Virtual Devices</h2>
+      <Column fullWidth>
+        <VirtualLights />
+        <VirtualSensors />
+      </Column>
+    </Column>
   );
-}
+};
 
 export default Dashboard;

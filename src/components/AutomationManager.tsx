@@ -1,10 +1,10 @@
-import { Column, Group } from '@hakit/components';
+import { Group } from '@hakit/components';
 import { useCallback, useEffect, useState } from 'react';
 import { fetchAutomations } from '../services/api';
 import { AutomationEntities } from './AutomationEntities';
 import { useHomeAssistantWebSocket } from '../Hooks/useHomeAssistantWebSocket';
 
-export const AutomationManager = () => {
+export const AutomationManager = ({ automationEntities }) => {
   const [automations, setAutomations] = useState([]);
   const [triggeredAutomation, setTriggeredAutomation] = useState();
 
@@ -31,14 +31,18 @@ export const AutomationManager = () => {
   }, []);
 
   useHomeAssistantWebSocket(handleEvent);
+  console.log(automations[0]);
 
   return (
-    <Group title='Automation Manager'>
-      <Column alignItems='flex-start'>
-        {automations.map(automation => (
-          <AutomationEntities automation={automation} key={automation.id} triggeredAutomation={triggeredAutomation} />
-        ))}
-      </Column>
+    <Group title='Automation Manager' alignItems='stretch'>
+      {automations.map(automation => (
+        <AutomationEntities
+          automation={automation}
+          key={automation.id}
+          triggeredAutomation={triggeredAutomation}
+          entity={automationEntities[automation.id]}
+        />
+      ))}
     </Group>
   );
 };
