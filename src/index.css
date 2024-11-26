@@ -1,1 +1,26 @@
 #root { width: 100%; height: 100%; }
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+  
+.overlay-content {
+    border-radius: 20px;
+    /* width: 80%; */
+    /* max-width: 600px; */
+    /* max-height: 80%; */
+    overflow-y: auto; /* Scrollable for large content */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+  
