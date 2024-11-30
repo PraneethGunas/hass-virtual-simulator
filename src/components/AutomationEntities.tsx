@@ -2,7 +2,7 @@ import { deepEqual, extractCategorizedEntityIds, replaceObjectPath } from '../se
 import { Column, Row, EntitiesCardRow, ButtonCard } from '@hakit/components';
 import { useEntitiesByDomain } from '../Hooks/useEntitiesByDomain';
 import { useState } from 'react';
-import CodeBlock from './CodeBlock';
+import { AutomationDiff } from './AutomationDiff';
 
 const EntityMap = (item, updateAutomation) => {
   const [active, setActive] = useState(item.entity_id);
@@ -60,6 +60,8 @@ export const AutomationEntities = props => {
     setModifiedAutomation(updatedAutomation);
   };
 
+  const isModified = !deepEqual(automation, modifiedAutomation);
+
   return (
     <>
       <ButtonCard
@@ -101,14 +103,7 @@ export const AutomationEntities = props => {
         </div>
       </ButtonCard>
       {showScript ? (
-        <>
-          <div className='overlay' onClick={onClose}>
-            <div className='overlay-content'>
-              <CodeBlock code={automation} />
-              {deepEqual(automation, modifiedAutomation) ? null : <CodeBlock code={modifiedAutomation} />}
-            </div>
-          </div>
-        </>
+        <AutomationDiff automation={automation} isModified={isModified} modifiedAutomation={modifiedAutomation} onClose={onClose} />
       ) : null}
     </>
   );
