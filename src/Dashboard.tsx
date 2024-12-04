@@ -18,7 +18,6 @@ export const Dashboard = () => {
     }
     return acc;
   }, {});
-  console.log(automationEntities);
 
   return (
     <Column fullWidth>

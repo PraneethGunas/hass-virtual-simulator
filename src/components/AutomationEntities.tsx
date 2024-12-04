@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { AutomationDiff } from './AutomationDiff';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { AutomationConfig, SocketMetadata } from '../models';
+import { EntityName } from '@hakit/core';
 
 const EntityMap = (item, updateAutomation) => {
   const [active, setActive] = useState(item.entity_id);
@@ -45,10 +46,11 @@ const EntityMap = (item, updateAutomation) => {
 };
 
 export const AutomationEntities = props => {
-  const { automation, triggeredAutomation, entity } = props as {
+  const { automation, triggeredAutomation, entity, entity_id } = props as {
     automation: AutomationConfig;
     triggeredAutomation: SocketMetadata;
     entity: HassEntity;
+    entity_id: EntityName;
   };
   const automationEntities = extractCategorizedEntityIds(automation);
   const [showScript, setShowScript] = useState(false);
@@ -71,9 +73,10 @@ export const AutomationEntities = props => {
   return (
     <>
       <ButtonCard
-        entity={entity.entity_id}
-        style={{ background: triggeredAutomation?.name == automation.alias ? 'green' : undefined }}
-        onClick={toggleScript}
+        entity={entity_id}
+        style={{ background: triggeredAutomation?.entity_id == entity_id ? 'green' : undefined }}
+        onDoubleClick={toggleScript}
+        service={'toggle'}
       >
         <div>
           {/* Trigger Entities */}

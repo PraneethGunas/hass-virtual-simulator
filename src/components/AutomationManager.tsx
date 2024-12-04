@@ -40,6 +40,7 @@ export const AutomationManager = ({ automationEntities }: { automationEntities: 
           automation={automation}
           triggeredAutomation={triggeredAutomation}
           entity={automationEntities[automation.id]}
+          entity_id={automationEntities[automation.id].entity_id}
         />
       ))}
     </Group>
