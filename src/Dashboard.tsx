@@ -1,9 +1,10 @@
 import { TimeCard, Column, Row } from '@hakit/components';
-import { useHass } from '@hakit/core';
+import { EntityName, useHass } from '@hakit/core';
 import { VirtualLights } from './components/VirtualLights';
 import { VirtualSensors } from './components/VirtualSensors';
 import { AutomationManager } from './components/AutomationManager';
 import { getEntityType } from './services/helpers';
+import { AutomationEntityMap } from './models';
 
 /**
  * Dashboard component displaying various Home Assistant controls and information
@@ -11,12 +12,13 @@ import { getEntityType } from './services/helpers';
 export const Dashboard = () => {
   const { getAllEntities } = useHass();
   const entities = getAllEntities();
-  const automationEntities = Object.values(entities).reduce((acc, entity) => {
-    if (getEntityType(entity.entity_id) === 'automation') {
+  const automationEntities: AutomationEntityMap = Object.values(entities).reduce((acc: AutomationEntityMap, entity) => {
+    if (getEntityType(entity.entity_id as EntityName) === 'automation') {
       acc[entity.attributes.id] = entity;
     }
     return acc;
   }, {});
+  console.log(automationEntities);
 
   return (
     <Column fullWidth>

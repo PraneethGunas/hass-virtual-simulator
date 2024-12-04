@@ -2,14 +2,25 @@ import PropTypes from 'prop-types';
 import CodeBlock from './CodeBlock';
 import { FabCard } from '@hakit/components';
 import { createAutomation } from '../services/api';
+import { AutomationConfig } from '../models';
 
-export const AutomationDiff = ({ automation, isModified, modifiedAutomation, onClose }) => {
+export const AutomationDiff = ({
+  automation,
+  isModified,
+  modifiedAutomation,
+  onClose,
+}: {
+  automation: AutomationConfig;
+  isModified: boolean;
+  modifiedAutomation: AutomationConfig;
+  onClose: () => void;
+}) => {
   // Handles the creation of the modified automation
   const handleCreateAutomation = async () => {
     if (!modifiedAutomation) return;
 
     try {
-      const { id, ...automationData } = modifiedAutomation; // Exclude `id` from the request payload
+      const { id: _, ...automationData } = modifiedAutomation; // Exclude `id` from the request payload
       await createAutomation(automationData);
       window.location.reload();
     } catch (error) {

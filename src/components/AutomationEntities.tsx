@@ -3,6 +3,8 @@ import { Column, Row, EntitiesCardRow, ButtonCard } from '@hakit/components';
 import { useEntitiesByDomain } from '../Hooks/useEntitiesByDomain';
 import { useState } from 'react';
 import { AutomationDiff } from './AutomationDiff';
+import { HassEntity } from 'home-assistant-js-websocket';
+import { AutomationConfig, SocketMetadata } from '../models';
 
 const EntityMap = (item, updateAutomation) => {
   const [active, setActive] = useState(item.entity_id);
@@ -13,7 +15,7 @@ const EntityMap = (item, updateAutomation) => {
       <EntitiesCardRow
         key={item.entity_id}
         entity={active}
-        renderState={entity => (
+        renderState={(entity: HassEntity) => (
           <div>
             {entity.state} {entity.attributes.unit_of_measurement}
           </div>
@@ -43,7 +45,11 @@ const EntityMap = (item, updateAutomation) => {
 };
 
 export const AutomationEntities = props => {
-  const { automation, triggeredAutomation, entity } = props;
+  const { automation, triggeredAutomation, entity } = props as {
+    automation: AutomationConfig;
+    triggeredAutomation: SocketMetadata;
+    entity: HassEntity;
+  };
   const automationEntities = extractCategorizedEntityIds(automation);
   const [showScript, setShowScript] = useState(false);
   const [modifiedAutomation, setModifiedAutomation] = useState(automation);

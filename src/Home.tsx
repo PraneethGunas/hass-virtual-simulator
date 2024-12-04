@@ -2,10 +2,11 @@ import { Column } from '@hakit/components';
 import { useHass } from '@hakit/core';
 import { useEffect, useState } from 'react';
 import Dashboard from './Dashboard';
+import { HassUser } from 'home-assistant-js-websocket';
 
 function Home() {
   const { getUser } = useHass();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<HassUser | null>(null);
 
   useEffect(() => {
     async function fetchUser() {

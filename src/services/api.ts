@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { randomUUID } from 'crypto';
-
 const BASE_URL = 'https://homeassistant.praneethg.xyz/api';
 const VIRTUAL_SERVICE = '/virtual';
 
@@ -26,7 +24,7 @@ export const addEntity = (config: any) =>
   });
 
 export const createAutomation = (automationConfig: any) => {
-  const freshId = randomUUID(); // is this the correct way to generate a new id?
+  const freshId = self.crypto.randomUUID(); // is this the correct way to generate a new id?
   return axios.post(`${ENDPOINTS.AUTOMATION_ENTRY}/${freshId}`, automationConfig, {
     headers: getHeaders(),
   });

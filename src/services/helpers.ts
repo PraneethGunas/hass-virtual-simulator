@@ -1,4 +1,8 @@
-export const getEntitiesFromAutomation = automationConfig => {
+import { EntityName } from '@hakit/core';
+import { HassEntity } from 'home-assistant-js-websocket';
+import { AutomationConfig } from '../models';
+
+export const getEntitiesFromAutomation = (automationConfig: HassEntity) => {
   const entities = new Set();
 
   function extractEntities(obj) {
@@ -19,12 +23,12 @@ export const getEntitiesFromAutomation = automationConfig => {
   return Array.from(entities);
 };
 
-export const getEntityType = entity => {
+export const getEntityType = (entity: EntityName) => {
   const domain = entity.split('.')[0];
   return domain;
 };
 
-export const filterEntitiesByDomain = (entities, domain) => {
+export const filterEntitiesByDomain = (entities: HassEntity[], domain: string) => {
   return entities.filter(entity => {
     const isDomainMatch = entity.entity_id.startsWith(`${domain}.`);
     return isDomainMatch;
@@ -36,7 +40,7 @@ export const filterEntitiesByDomain = (entities, domain) => {
  * @param {Object} automation - The automation configuration object
  * @returns {Object} Object with categorized arrays of entity_ids along with their paths
  */
-export const extractCategorizedEntityIds = automation => {
+export const extractCategorizedEntityIds = (automation: AutomationConfig) => {
   if (!automation || typeof automation !== 'object') {
     throw new Error('Invalid automation configuration');
   }

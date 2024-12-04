@@ -3,15 +3,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { fetchAutomations } from '../services/api';
 import { AutomationEntities } from './AutomationEntities';
 import { useHomeAssistantWebSocket } from '../Hooks/useHomeAssistantWebSocket';
+import { AutomationConfig, AutomationEntityMap, SocketMetadata } from '../models';
 
-export const AutomationManager = ({ automationEntities }) => {
-  const [automations, setAutomations] = useState([]);
-  const [triggeredAutomation, setTriggeredAutomation] = useState();
+export const AutomationManager = ({ automationEntities }: { automationEntities: AutomationEntityMap }) => {
+  const [automations, setAutomations] = useState<AutomationConfig[]>([]);
+  const [triggeredAutomation, setTriggeredAutomation] = useState<SocketMetadata>();
 
   useEffect(() => {
     const getAutomations = async () => {
       try {
-        const automationsFromHass = await fetchAutomations();
+        const automationsFromHass = (await fetchAutomations()) as AutomationConfig[];
         setAutomations(automationsFromHass);
       } catch (error) {
         console.error('Error fetching automations:', error);
@@ -23,7 +24,6 @@ export const AutomationManager = ({ automationEntities }) => {
 
   const handleEvent = useCallback((eventType: string, entityId: string, data: any) => {
     if (eventType === 'automation_triggered') {
-      console.log('Automation triggered:', entityId, data);
       setTriggeredAutomation(data);
       // Clear triggered automation after 5 seconds
       setTimeout(() => setTriggeredAutomation(undefined), 2000);
@@ -36,8 +36,8 @@ export const AutomationManager = ({ automationEntities }) => {
     <Group title='Automation Manager' alignItems='stretch'>
       {automations.map(automation => (
         <AutomationEntities
-          automation={automation}
           key={automation.id}
+          automation={automation}
           triggeredAutomation={triggeredAutomation}
           entity={automationEntities[automation.id]}
         />
