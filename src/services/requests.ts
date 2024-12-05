@@ -21,3 +21,17 @@ export const addLightEntity = async (name: string) => {
     captureError(error, 'Failed to add light entity');
   }
 };
+
+export const addSensorEntity = async (name: string) => {
+  try {
+    await addEntity({
+      platform: 'sensor',
+      name: name,
+      unit_of_measurement: '°C',
+      initial_value: 100,
+      initial_availability: true,
+    });
+  } catch (error) {
+    captureError(error, 'Failed to add sensor entity');
+  }
+};
