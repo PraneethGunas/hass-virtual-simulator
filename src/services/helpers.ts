@@ -74,8 +74,10 @@ export const extractCategorizedEntityIds = (automation: AutomationConfig) => {
               result[category].push({ entity_id: entityId, path: [...path, key, idx] });
             });
           } else {
-            // Generate path without index for strings
-            result[category].push({ entity_id: data[key], path: [...path, key] });
+            if (data[key].includes('.')) {
+              // Generate path without index for strings
+              result[category].push({ entity_id: data[key], path: [...path, key] });
+            }
           }
         } else {
           extractEntityIds(data[key], [...path, key], category);
